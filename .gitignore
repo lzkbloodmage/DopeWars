@@ -1,2 +1,41 @@
 __pycache__/
 *.session
+*.py[cod]
+*.idea
+*.python
+
+# dotenv environment variables files
+.env
+.env.*
+env/
+env*
+
+# Build generated
+dist/
+build/
+
+# System Files
+*.DS_Store
+
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent

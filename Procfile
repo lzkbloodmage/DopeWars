@@ -1,1 +1,1 @@
-bot: python3 main.py
+dopewars: python src/main.py
