@@ -1,0 +1,6 @@
+# Dependencies
+telethon
+
+# If there's a need to specify version
+# Uncomment below
+#telethon==1.1.1
