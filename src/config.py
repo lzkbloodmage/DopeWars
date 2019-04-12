@@ -7,14 +7,19 @@ import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
 
+# Telegram API variables
 session_name = config['telegramAPI']['session_name']
 api_id = config['telegramAPI']['api_id']
 api_hash = config['telegramAPI']['api_hash']
 
+# Chat target ID variables
 tarGame_id = config['targetID']['targetGame_id']
-tarChat_id = config['targetID']['targetChat_id']
+tarOrder_id = config['targetID']['targetOrder_id']
 tarCastleBot_id = config['targetID']['targetCastleBot_id']
 
-tarGame_name = config['target']['targetGame']
-tarChat_name = config['target']['targetChat']
-tarCastleBot_name = config['target']['targetCastleBot']
+# Chat target name variables
+tarGame_name = config['target']['targetGame_name']
+tarOrder_name = config['target']['targetOrder_name']
+tarCastleBot_name = config['target']['targetCastleBot_name']
+
+# Program settings variables
