@@ -5,54 +5,29 @@
 # Import python async i/o module
 import asyncio
 
-# Import python datetime module
-import datetime
-
-# Import python secrets and random number module (requires python3.7)
-import secrets, random
-
-# Import python regex module
-import re
-
 # Import python logging module
 import logging
 
-# Import own modules
-import configChecker
-
 # Import Telethon modules
-from telethon import TelegramClient, events
+from telethon import TelegramClient
+
+# Import own modules
+import timeModule, configChecker as conf
+import handlerAdmin, handlerGame, handlerOrder
 
 # Configure Telethon events logging level
 logging.basicConfig(level=logging.ERROR)
 
-# Client sign-in settings
-sess_name, api_id, api_hash = configChecker.iniTelegramAPI()
-client = TelegramClient(sess_name, api_id, api_hash)
-
-# Initialise chat target variables
-tarGame = None
-tarOrder = None
-tarCastleBot = None
-
-# Initialise variables
-userME = None
-
-
-# Function to get current time
-def currTime():
-	now = datetime.datetime.now()
-	nowFormatted = now.replace(microsecond = 0)
-	nowString = str(nowFormatted)
-	return nowString
+# Assign external variables to local variables
+client = conf.client
+currTime = timeModule.currTime
 
 # Sign-in Function
 async def signin():
 	try:
 		print("\n" + currTime() + " Signing in...")
 		await client.start()
-		global userME
-		userME = await client.get_me()
+		conf.userME = await client.get_me()
 	except:
 		print("* Sign-in: Connection Error")
 		quit()
@@ -61,38 +36,29 @@ async def signin():
 	
 	return None
 
-# Function to set chat target variables
-async def getChatTargets():
-	global tarGame, tarOrder, tarCastleBot
-	tarGame, tarOrder, tarCastleBot = await configChecker.iniChatTargets(client)
-
 # Function for welcome message
 async def welcome():
 	print("welcome")
-	await client.send_message(userME, "Script has (re)started!\n\n" + getAllAutoStatus())
-
-# Function to get script's auto status
-def getAllAutoStatus():
-	autoStatusMsg = []
-	autoStatusMsg.append("=== Status of Auto ===\n")
-	return ''.join(autoStatusMsg)
-
-# INCOMPLETE Event handler for game itself
-@client.on(events.NewMessage(chats = tarGame))
-async def game_message_handler(event):
-	gmsg = event.message
-	if gmsg.from_id == tarGame:
-		strgm = str(gmsg.message.casefold())
+	await client.send_message(conf.userME, "Notice: Script has (re)started!\n\n\
+		<code>/status</code> for current script status\n\
+		<code>/help</code> for help", parse_mode='html')
 
 # Main Method
 async def main():
     # Sign-in
 	await signin()
 	
-	# Get chat targets
-	await getChatTargets()
-	
+	# Initialise and set variables from config file
+	await conf.start()
+
 	print(currTime() + " Completed startup process")
+
+	# Add handlers
+	client.add_event_handler(handlerAdmin.admin_message_handler)
+	client.add_event_handler(handlerAdmin.me_message_handler)
+	client.add_event_handler(handlerGame.game_message_handler)
+	client.add_event_handler(handlerOrder.battle_order_handler)
+	client.add_event_handler(handlerOrder.minireport_handler)
 
 	await welcome()
 	

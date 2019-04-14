@@ -4,11 +4,48 @@
 # Import python datetime module
 import datetime
 
+# Import Telethon module
+from telethon import TelegramClient
+
 # Import config.py file
 import config
 
 # Initialise client variable for use in here
 client2 = None
+
+
+##### Initialse variable for use with other modules too #####
+# Initialise chat target variables
+tarGame = None
+tarOrder = None
+tarCastleBot = None
+tarAdmin = None
+
+# Initialise variables
+userME = None
+
+# Initialise admin command status variables
+master_status = None
+status_go = None
+status_pledge = None
+status_def = None
+status_tact = None
+status_tactTarget = "default"
+status_report = None
+status_reportsentcheck = None
+status_reportlocation = None
+
+# Initialise counter variables
+attack_target = None
+#sent_att = 0
+sent_go = 0
+sent_godef = 0
+sent_pledge = 0
+sent_tact = 0
+sent_report = 0
+
+##############################################################
+
 
 # Function to confirm given chat target ID
 async def confirmTargetID(tid):
@@ -22,7 +59,7 @@ async def confirmTargetID(tid):
 			if(cid == tid):
 				print(">> ok")
 				return True
-	
+
 		return False
 	except:
 		print("*> ERROR: Possible client error")
@@ -101,35 +138,90 @@ async def iniChatTargets(argv):
 	
 	global client2
 	client2 = argv
-
+	
 	# Get chat target values from config file
 	tGameID = config.tarGame_id
 	tOrderID = config.tarOrder_id
 	tCastleBotID = config.tarCastleBot_id
-
+	tAdminID = config.tarAdmin_id
 	tGameName = config.tarGame_name
 	tOrderName = config.tarOrder_name
 	tCastleBotName = config.tarCastleBot_name
+	tAdminName = config.tarAdmin_name
 	
 	try:
 		a = await checkTargetID(tGameID, tGameName, 1)
 		b = await checkTargetID(tOrderID, tOrderName, 0)
 		c = await checkTargetID(tCastleBotID, tCastleBotName, 0)
+		d = await checkTargetID(tAdminID, tAdminName, 0)
+		if(d is None):
+			d = await client2.get_me()
+			d = int(d.id)
 	except:
 		print(str(datetime.datetime.now().replace(microsecond = 0)) + " EXIT DUE ERROR IN CHECKING CHAT TARGET!!!")
 		quit()
 	else:
 		print("Initialisation complete")
-		return a, b, c
+		return a, b, c, d
 
 # Function to get Telegram api variables
 def iniTelegramAPI():
 	tgSessName = config.session_name
 	tgAPIID = config.api_id
 	tgAPIHash = config.api_hash
-
+	
 	if None not in (tgSessName, tgAPIID, tgAPIHash):
 		return tgSessName, tgAPIID, tgAPIHash
 	else:
 		print("ERROR: Telegram API variables not complete!")
 		quit()
+
+# Function to get variable values from config file
+def iniStatus():
+	try: sGo = int(config.status_go)
+	except: sGo = None
+	try: sPledge = int(config.status_pledge)
+	except: sPledge = None
+	try: sDef = int(config.status_def)
+	except: sDef = None
+	try: sTact = int(config.status_tact)
+	except: sTact = None
+	try: sTactTarget = config.status_tactTarget
+	except: sTactTarget = None
+	try: sReport = int(config.status_report)
+	except: sReport = None
+	try: sReportsentcheck = int(config.status_report_sentcheck)
+	except: sReportsentcheck = None
+	try: sReportlocation = config.status_report_location
+	except: sReportlocation = None
+	
+	return sGo, sPledge, sDef, sTact, sTactTarget, sReport, sReportsentcheck, sReportlocation
+
+# Client sign-in settings
+sess_name, api_id, api_hash = iniTelegramAPI()
+client = TelegramClient(sess_name, api_id, api_hash)
+
+# Main. Assign values from config file to variables
+async def start():
+	global tarGame
+	global tarOrder
+	global tarCastleBot
+	global tarAdmin
+	tarGame, tarOrder, tarCastleBot, tarAdmin = await iniChatTargets(client)
+
+	global userME
+	userME = await client.get_entity("me")
+
+	global master_status
+	try: master_status = int(config.master_status)
+	except: master_status = None
+
+	global status_go
+	global status_pledge
+	global status_def
+	global status_tact
+	global status_tactTarget
+	global status_report
+	global status_reportsentcheck
+	global status_reportlocation
+	status_go, status_pledge, status_def, status_tact, status_tactTarget, status_report, status_reportsentcheck, status_reportlocation = iniStatus()
