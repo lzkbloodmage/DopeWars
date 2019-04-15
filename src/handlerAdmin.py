@@ -94,8 +94,8 @@ async def show_helpdetails(theEvent):
 # Function for displaying information about this program
 async def show_about(theEvent):
 	about_msg = ("<b>===== ABOUT =====</b>\n"
-		+ "Version: BETA REWRITE v2.0b1\n"
-		+ "Build Date: 14 April 2019\n")
+		+ "Version: BETA REWRITE v2.0b2\n"
+		+ "Build Date: 15 April 2019\n")
 	await theEvent.reply(about_msg, parse_mode='html')
 	print(currTime() + " Log: Display About")
 
@@ -107,10 +107,30 @@ async def get_chat_name(client_arg, target_entity):
 		tempResult = "(" + str(target_entity) +")"
 	else:
 		tempTarget = await client_arg.get_entity(target_entity)
-		if(tempTarget.first_name):
-			tempResult += (str(tempTarget.first_name))
+		try:
+			if(tempTarget.title):
+				tempResult += (str(tempTarget.title))
+		except:
+			print(currTime() + " Warning: Checking stored entity (" + str(target_entity) + "): no title")
+		
+		try:
+			if(tempTarget.first_name):
+				tempResult += (str(tempTarget.first_name))
+		except:
+			print(currTime() + " Warning: Checking stored entity (" + str(target_entity) + "): no first name")
+		
+		try:
 			if(tempTarget.last_name):
 				tempResult += (str(" " + tempTarget.last_name))
+		except:
+			print(currTime() + " Warning: Checking stored entity (" + str(target_entity) + "): no last name")
+		
+		try:
+			if(tempTarget.username):
+				tempResult += (str(" (</code>@" + tempTarget.username) + "<code>)")
+		except:
+			print(currTime() + " Warning: Checking stored entity (" + str(target_entity) + "): no username")
+
 		tempResult += (" (" + str(target_entity) + ")")
 	return tempResult
 
@@ -119,10 +139,10 @@ async def show_config(theEvent):
 	client_arg = theEvent.client
 	config_msg = ("<b>=== CONFIGURATION ===</b>\n"
 		+ "<b>[Target Chats]</b>\n"
-		+ "Admin: <code>" + await get_chat_name(client_arg, conf.tarAdmin) + "</code>\n"
-		+ "Game: <code>" + await get_chat_name(client_arg, conf.tarGame) + "</code>\n"
-		+ "Order: <code>" + await get_chat_name(client_arg, conf.tarOrder) + "</code>\n"
-		+ "Castle Bot: <code>" + await get_chat_name(client_arg, conf.tarCastleBot) + "</code>\n")
+		+ "> Admin: <code>" + await get_chat_name(client_arg, conf.tarAdmin) + "</code>\n"
+		+ "> Game: <code>" + await get_chat_name(client_arg, conf.tarGame) + "</code>\n"
+		+ "> Order: <code>" + await get_chat_name(client_arg, conf.tarOrder) + "</code>\n"
+		+ "> Castle Bot: <code>" + await get_chat_name(client_arg, conf.tarCastleBot) + "</code>\n")
 	await theEvent.reply(config_msg, parse_mode='html')
 	print(currTime() + " Log: Display Configuration")
 
@@ -326,52 +346,51 @@ async def change_chat_details(theEvent, target_type, input_type):
 						if(target_entity.title):
 							target_name = str(target_entity.title)
 					except:
-						print(currTime() + " Warning: Input entity has no title")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no title")
 					
 					try:
 						if(target_entity.first_name):
 							target_name = (str(target_entity.first_name))
 					except:
-						print(currTime() + " Warning: Input entity has no first name")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no first name")
 					
 					try:
 						if(target_entity.last_name):
 							target_name += (str(" " + target_entity.last_name))
 					except:
-						print(currTime() + " Warning: Input entity has no last name")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no last name")
 					
 					try:
 						if(target_entity.username):
 							target_username = str("@" + target_entity.username)
 					except:
-						print(currTime() + " Warning: Input entity has no username")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no username")
 				elif(input_type == "str"):
 					target_entity = await theEvent.client.get_entity(str(target_input[1]))
-					print(target_entity)
 					target_id = target_entity.id
 					try:
 						if(target_entity.title):
 							target_name = str(target_entity.title)
 					except:
-						print(currTime() + " Warning: Input entity has no title")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no title")
 					
 					try:
 						if(target_entity.first_name):
 							target_name = (str(target_entity.first_name))
 					except:
-						print(currTime() + " Warning: Input entity has no first name")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no first name")
 					
 					try:
 						if(target_entity.last_name):
 							target_name += (str(" " + target_entity.last_name))
 					except:
-						print(currTime() + " Warning: Input entity has no last name")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no last name")
 					
 					try:
 						if(target_entity.username):
 							target_username = str("@" + target_entity.username)
 					except:
-						print(currTime() + " Warning: Input entity has no username")
+						print(currTime() + " Warning: Input entity (" + str(target_input[1]) + ") has no username")
 				else:
 					print(currTime() + " ERROR: Invalid argument for input_type in change_chat_details function!")
 					await theEvent.reply("ERROR: Invalid argument encountered!", parse_mode='html')
@@ -534,12 +553,26 @@ async def check_commands(theEvent):
 async def admin_message_handler(event):
 	if(conf.tarAdmin != conf.userME.id):
 		admsg = event.message
-		if((admsg.from_id == conf.userME.id) and (admsg.to_id.user_id == conf.tarAdmin)):
-			await check_commands(event)
+		if(admsg.from_id == conf.userME.id):
+			try:
+				if(admsg.to_id.user_id):
+					pass
+			except:
+				pass
+			else:
+				if(admsg.to_id.user_id == conf.tarAdmin):
+					await check_commands(event)
 
 # Event handler for admin messages (no client)
 @events.register(events.NewMessage(chats = conf.userME))
 async def me_message_handler(event):
 	admsg = event.message
-	if((admsg.from_id == conf.userME.id) and (admsg.to_id.user_id == conf.userME.id)):
-		await check_commands(event)
+	if(admsg.from_id == conf.userME.id):
+		try:
+			if(admsg.to_id.user_id):
+				pass
+		except:
+			pass
+		else:
+			if(admsg.to_id.user_id == conf.userME.id):
+				await check_commands(event)
