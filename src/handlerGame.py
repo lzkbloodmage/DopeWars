@@ -68,7 +68,7 @@ async def game_message_handler(event):
 				# Auto-go function
 				await hfunc.setSentCounter("go", 0)
 				if(conf.status_go == 1):
-					await timeModule.sleepyHuman(30, 60)
+					await timeModule.sleepyHuman(15, 40)
 					if(conf.sent_go == 0):
 						await client.send_message(conf.tarGame, "/go")
 						print(hfunc.currTime() + " Action: Auto /go")
