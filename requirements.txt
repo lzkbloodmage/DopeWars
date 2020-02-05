@@ -1,6 +1,13 @@
-# Dependencies
+# List of required dependencies
+rsa
+pyaes
 telethon
 
-# If there's a need to specify version
-# Uncomment below
-#telethon==1.1.1
+# Optional Dependencies
+cryptg
+
+# If you need to specify a version
+#rsa==3.4.2
+#pyaes==1.6.1
+#cryptg==0.2.post0
+#telethon==1.10.10
